@@ -65,7 +65,7 @@ This will configure an Apache Virtual Host listening on port 80 for any requests
 `hx_website::website` creates name-based virtual hosts. Two websites can have the same `vhost_data['servername']`, provided the `vhost_data['port']` parameter is different. This can be used to create two `hx_website::website`, one HTTP version that redirects to a HTTPS version. This can be done automatically however.
 
 ### SSL
-To configure SSL-based virtual hosts, you can set either `use_letsencrypt` to `true` (see below) or provide the certificates manually. Note that, if you set `use_letsencrypt`, it will only request certificates when it encounters `vhost_data['port'] == 433`.
+To configure SSL-based virtual hosts, you can set either `use_letsencrypt` to `true` (see below) or provide the certificates manually. Note that, if you set `use_letsencrypt`, it will only request certificates when it encounters `vhost_data['port'] == 443`.
 
 In a lot of cases, you want to redirect any traffic for the non-encrypted site (e.g. http://www.example.org) to the encrypted one (i.e. https://www.example.org). This can be done automatically, if you set `configure_redirect` to true. A new Virtual Host will be created which will redirect all non-encrypted traffic to a HTTPS-version of the `vhost_data['servername']` parameter.
 
