@@ -14,6 +14,7 @@
 # $use_letsencrypt: attempt to get a Let's Encrypt certificate (default: true)
 # $key_loc: location of the SSL key if it is an SSL host, but you're not using Let's Encrypt
 # $cert_loc: location of the SSL certificate (see $key_loc)
+# $ca_loc: location of the SSL CA file.
 ##
 define hx_website::website (
     $website_name = $title,
@@ -21,6 +22,7 @@ define hx_website::website (
     $use_letsencrypt = true,
     $key_loc = undef,
     $cert_loc = undef,
+    $ca_loc = undef,
 ) {
     validate_hash($vhost_data)
 
@@ -32,7 +34,8 @@ define hx_website::website (
         vhost_data      => $vhost_data,
         use_letsencrypt => $use_letsencrypt,
         key_loc         => $key_loc,
-        cert_loc        => $cert_loc
+        cert_loc        => $cert_loc,
+        ca_loc          => $ca_loc,
     }
 
 }

@@ -1,0 +1,33 @@
+{
+  "name": "pieterdp-hx_website",
+  "version": "1.0.0",
+  "author": "Pieter De Praetere",
+  "summary": "Module to configure Apache and Let's Encrypt for a single website.",
+  "license": "Apache 2.0",
+  "source": "https://github.com/pieterdp/hx_website",
+  "project_page": "https://github.com/pieterdp/hx_website",
+  "issues_url": "https://github.com/pieterdp/hx_website/issues",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_range": ">= 1.0.0"
+    },
+    {
+        "name": "packed-pp_apache",
+        "version_range": ">= 1.0.0"
+    },
+    {
+      "name": "danzilio-letsencrypt",
+      "version_range": ">= 1.0.0"
+    }
+  ]
+}

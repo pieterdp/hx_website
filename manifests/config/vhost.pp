@@ -3,9 +3,10 @@
 define hx_website::config::vhost (
     $website_name = $title,
     $vhost_data = undef,
-    $use_letsencrypt = true,
+    $use_letsencrypt = false,
     $cert_loc = undef,
     $key_loc = undef,
+    $ca_loc = undef,
     ) {
 
     validate_hash($vhost_data)
@@ -51,6 +52,16 @@ define hx_website::config::vhost (
             before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
             require => Letsencrypt::Certonly[$vhost_data['servername']],
         }
+
+        # Let's Encrypt root
+        file {'/etc/ssl/certs/lets-encrypt-x3-cross-signed.pem':
+            ensure => present,
+            source => 'https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem',
+            owner  => root,
+            group  => ssl-cert,
+            mode   => '0644',
+            before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        }
     }
 
     if $vhost_data['port'] == 443 and $use_letsencrypt == false {
@@ -77,6 +88,16 @@ define hx_website::config::vhost (
             group  => ssl-cert,
             mode   => '0640',
             before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        }
+        if $ca_loc != undef and has_key($vhost_data, 'ssl_ca') {
+            file {$vhost_data['ssl_ca']:
+                ensure => present,
+                source => $ca_loc,
+                owner  => root,
+                group  => ssl-cert,
+                mode   => '0644',
+                before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+            }
         }
     }
 
