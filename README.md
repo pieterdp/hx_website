@@ -3,14 +3,14 @@
 #### Table of Contents
 
 1. [Description](#description)
-2. [Setup - The basics of getting started with hx_website](#setup)
+2. [Setup](#setup)
     * [What hx_website affects](#what-hx_website-affects)
     * [Setup requirements](#setup-requirements)
     * [Beginning with hx_website](#beginning-with-hx_website)
-3. [Usage - Configuration options and additional functionality](#usage)
-4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+3. [Usage](#usage)
+4. [Reference](#reference)
+5. [Limitations](#limitations)
+6. [Development](#development)
 
 ## Description
 
@@ -24,7 +24,7 @@ This module will install and configure the Apache web server and configure any w
 
 * This module uses the [puppetlabs-apache](https://forge.puppet.com/puppetlabs/apache)-module, so it will automatically purge all (Apache) configuration files not managed by Puppet. It will not be possible to create your own Virtual Hosts, unless you disable the module first.
 
-* If you want to change the configuration of the Apache web server, you must do so in `pp_apache`. Inclusion of `pp_apache` is required before you can use this module.
+* If you want to change the configuration of the Apache web server, you must do so in `pp_apache`.
 
 ### Setup Requirements
 
@@ -62,12 +62,12 @@ This will configure an Apache Virtual Host listening on port 80 for any requests
 ### Virtual Hosts
 `vhost_data` is passed directly to `apache::vhost`. All valid parameters for that class can appear in `vhost_data`.
 
-`hx_website::website` creates name-based virtual hosts. Two websites can have the same `servername` (inside `vhost_data`), provided the `port` parameter is different. This can be used to create two `hx_website::website`, one HTTP version that redirects to a HTTPS version. This can be done automatically however.
+`hx_website::website` creates name-based virtual hosts. Two websites can have the same `vhost_data['servername']`, provided the `vhost_data['port']` parameter is different. This can be used to create two `hx_website::website`, one HTTP version that redirects to a HTTPS version. This can be done automatically however.
 
 ### SSL
-To configure SSL-based virtual hosts, you can set either `use_letsencrypt` to `true` (see below) or provide the certificates manually. Note that, if you set `use_letsencrypt`, it will only request certificates when it encounters `port` `433` inside `vhost_data`.
+To configure SSL-based virtual hosts, you can set either `use_letsencrypt` to `true` (see below) or provide the certificates manually. Note that, if you set `use_letsencrypt`, it will only request certificates when it encounters `vhost_data['port'] == 433`.
 
-In a lot of cases, you want to redirect any traffic for the non-encrypted site (e.g. http://www.example.org) to the encrypted one (i.e. https://www.example.org). This can be done automatically, if you set `configure_redirect` to true. A new Virtual Host will be created which will redirect all non-encrypted traffic to a HTTPS-version of the `servername` parameter in `vhost_data`.
+In a lot of cases, you want to redirect any traffic for the non-encrypted site (e.g. http://www.example.org) to the encrypted one (i.e. https://www.example.org). This can be done automatically, if you set `configure_redirect` to true. A new Virtual Host will be created which will redirect all non-encrypted traffic to a HTTPS-version of the `vhost_data['servername']` parameter.
 
 ### Let's Encrypt
 It is possible to automatically configure Let's Encrypt, but it comes with some caveats.
