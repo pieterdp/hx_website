@@ -5,16 +5,11 @@
 # - if $use_letsencrypt is true (default), (attempt) to get a Let's Encrypt certificate.
 # - if $use_letsencrypt is false and you're defining an SSL VHost, use $key_loc and $cert_loc to copy the SSL certificate.
 #
-# Because of the way Puppet and Let's Encrypt work, you must request a certificate (or use the snakeoil certificate)
-# before your first run with a new website. I can only attempt to get a cert if the web server is running.
-# And for this to happen, you must have a certificate.
-#
 # Parameters
 # $vhost_data: a hash of key-value pairs that can be pass directly to apache::vhost (required)
 # $use_letsencrypt: attempt to get a Let's Encrypt certificate (default: true)
 # $key_loc: location of the SSL key if it is an SSL host, but you're not using Let's Encrypt
 # $cert_loc: location of the SSL certificate (see $key_loc)
-# $ca_loc: location of the SSL CA file.
 ##
 define hx_website::website (
     $website_name = $title,
@@ -22,7 +17,6 @@ define hx_website::website (
     $use_letsencrypt = true,
     $key_loc = undef,
     $cert_loc = undef,
-    $ca_loc = undef,
 ) {
     validate_hash($vhost_data)
 
@@ -34,8 +28,7 @@ define hx_website::website (
         vhost_data      => $vhost_data,
         use_letsencrypt => $use_letsencrypt,
         key_loc         => $key_loc,
-        cert_loc        => $cert_loc,
-        ca_loc          => $ca_loc,
+        cert_loc        => $cert_loc
     }
 
 }

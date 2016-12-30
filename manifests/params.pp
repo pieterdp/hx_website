@@ -1,6 +1,6 @@
 ##
 # Parameter class
 class hx_website::params {
-    $configure_redirect = false
+    $configure_redirect = true
     $maintainer = "${::networking['hostname']}@${::networking['domain']}"
 }
