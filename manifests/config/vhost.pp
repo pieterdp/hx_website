@@ -40,6 +40,7 @@ define hx_website::config::vhost (
                 mode    => '0644',
                 before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
                 require => Letsencrypt::Certonly[$vhost_data['servername']],
+                notify  => Class['Apache::Service'],
             }
             file {$vhost_data['ssl_key']:
                 ensure  => present,
@@ -50,6 +51,7 @@ define hx_website::config::vhost (
                 mode    => '0640',
                 before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
                 require => Letsencrypt::Certonly[$vhost_data['servername']],
+                notify  => Class['Apache::Service'],
             }
         } else {
             if $cert_loc == undef {
@@ -66,6 +68,7 @@ define hx_website::config::vhost (
                 group  => root,
                 mode   => '0644',
                 before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+                notify => Class['Apache::Service'],
             }
             file {$vhost_data['ssl_key']:
                 ensure => present,
@@ -74,6 +77,7 @@ define hx_website::config::vhost (
                 group  => ssl-cert,
                 mode   => '0640',
                 before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+                notify => Class['Apache::Service'],
             }
         }
 

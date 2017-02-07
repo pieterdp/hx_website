@@ -28,7 +28,7 @@ This module will install and configure the Apache web server and configure any w
 
 ### Setup Requirements
 
-* Including and configuring `pp_apache` is required before you can use this module.
+* Including and configuring [`pp_apache`](https://github.com/PACKED-vzw/pp_apache) is required before you can use this module.
 
 ### Beginning with hx_website
 
@@ -40,14 +40,14 @@ The most simple configuration is:
 class {'hx_website': }
 ```
 
-Creating a website is done by using the definted type `hx_website::website`:
+Creating a website is done by using the defined type `hx_website::website`:
 
 ```
 hx_website::website { 'www.example.org':
     vhost_data => {
         servername    => 'www.example.org',
         port          => '80',
-        docroot       => '/var/www/www.example.org/hmtl',
+        docroot       => '/var/www/www.example.org/html',
         docroot_owner => 'www-data',
         docroot_group => 'www-data',
 
