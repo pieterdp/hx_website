@@ -24,11 +24,11 @@ This module will install and configure the Apache web server and configure any w
 
 * This module uses the [puppetlabs-apache](https://forge.puppet.com/puppetlabs/apache)-module, so it will automatically purge all (Apache) configuration files not managed by Puppet. It will not be possible to create your own Virtual Hosts, unless you disable the module first.
 
-* If you want to change the configuration of the Apache web server, you must do so in `pp_apache`.
+* If you want to change the configuration of the Apache web server, you must do so in `hx_apache`.
 
 ### Setup Requirements
 
-* Including and configuring [`pp_apache`](https://github.com/PACKED-vzw/pp_apache) is required before you can use this module.
+* Including and configuring [`hx_apache`](https://github.com/pieterdp/hx_apache) is required before you can use this module.
 
 ### Beginning with hx_website
 
