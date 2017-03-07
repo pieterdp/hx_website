@@ -95,6 +95,8 @@ define hx_website::config::vhost (
                 servername      => $vhost_data['servername'],
                 port            => 80,
                 docroot         => $vhost_data['docroot'],
+                docroot_owner   => $vhost_data['docroot_owner'],
+                docroot_group   => $vhost_data['docroot_group'],
                 serveraliases   => $::serveraliases,
                 redirect_status => 'permanent',
                 redirect_dest   => "https://${vhost_data['servername']}/"
