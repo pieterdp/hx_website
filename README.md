@@ -100,8 +100,6 @@ If you don't want Let's Encrypt, you can provide your own certificate. This can 
 
 * `key_loc` (optional, required only if `use_letsencrypt` is set to `false` and `vhost_data['port']` is set to `443`): location of the key file that will be copied to the location referred to in `vhost_data['ssl_key']`. Accepts the same syntax as `file`->`source`.
 
-* `ca_loc` (optional, only used if `use_letsencrypt` is set to `false` and `vhost_data['port']` is set to `443`): location of the CA certificate file that will be copied to the location referred to in `vhost_data['ssl_ca']`. Accepts the same syntax as `file`->`source`.
-
 ### Under-the-hood classes
 
 * `hx_website::config::vhost`: backend class for `hx_website::website`. Accepts the same parameters.

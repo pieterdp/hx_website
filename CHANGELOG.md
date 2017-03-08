@@ -1,4 +1,4 @@
-## Release 1.0.2
+## Release 1.0.3
 
 #### Summary
 This release fixes some bugs and updates the documentation.
