@@ -24,6 +24,8 @@ define hx_website::config::vhost (
                 $lets_domains = $domains
             }
 
+            include hx_website::config::ssl::letsencrypt
+
             letsencrypt::certonly {$vhost_data['servername']:
                 domains       => $lets_domains,
                 plugin        => 'webroot',
