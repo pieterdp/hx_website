@@ -106,8 +106,29 @@ define hx_website::config::vhost (
         }
     }
 
+    # Docroot
+    if !member($vhost_data['directories'], $vhost_data['docroot']) {
+        $directories = $vhost_data['directories'] + [{
+            path           => $vhost_data['docroot'],
+            options        => [
+                'Indexes',
+                'FollowSymLinks',
+                'MultiViews'
+            ],
+            allow_override => [
+                'All'
+            ]
+        }]
+    } else {
+        $directories = $vhost_data['directories']
+    }
+
+    $vhost = {
+        directories => $directories
+    } + $vhost_data
+
     apache::vhost {"${vhost_data['servername']}_${vhost_data['port']}":
-        * => $vhost_data,
+        * => $vhost,
     }
 
 }
