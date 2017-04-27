@@ -107,18 +107,21 @@ define hx_website::config::vhost (
     }
 
     # Docroot
-    if !member($vhost_data['directories'], $vhost_data['docroot']) {
-        $directories = $vhost_data['directories'] + [{
-            path           => $vhost_data['docroot'],
-            options        => [
-                'Indexes',
-                'FollowSymLinks',
-                'MultiViews'
-            ],
-            allow_override => [
-                'All'
-            ]
-        }]
+    $docroot = {
+        path           => $vhost_data['docroot'],
+        options        => [
+            'Indexes',
+            'FollowSymLinks',
+            'MultiViews'
+        ],
+        allow_override => [
+            'All'
+        ]
+    }
+    if !has_key($vhost_data, 'directories') {
+        $directories = [$docroot]
+    } elsif !member($vhost_data['directories'], $vhost_data['docroot']) {
+        $directories = $vhost_data['directories'] + [$docroot]
     } else {
         $directories = $vhost_data['directories']
     }
