@@ -22,10 +22,6 @@
       "version_range": ">= 1.0.0 < 4.0.0"
     },
     {
-        "name": "pieterdp-hx_apache",
-        "version_range": ">= 1.0.0 < 2.0.0"
-    },
-    {
       "name": "danzilio-letsencrypt",
       "version_range": ">= 1.0.0 < 2.0.0"
     }

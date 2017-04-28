@@ -24,12 +24,6 @@ This module will install and configure the Apache web server and configure any w
 
 * This module uses the [puppetlabs-apache](https://forge.puppet.com/puppetlabs/apache)-module, so it will automatically purge all (Apache) configuration files not managed by Puppet. It will not be possible to create your own Virtual Hosts, unless you disable the module first.
 
-* If you want to change the configuration of the Apache web server, you must do so in `hx_apache`.
-
-### Setup Requirements
-
-* Including and configuring [`hx_apache`](https://github.com/pieterdp/hx_apache) is required before you can use this module.
-
 ### Beginning with hx_website
 
 The module consists of two parts: `hx_website` which will do some configuration checks and `hx_website::website` which will configure your website.
@@ -84,6 +78,10 @@ The base class, that must be included and/or configured before you can use `hx_w
 * `configure_redirect` (default `false`): if you provide a website that is HTTPS (port 443), should we create a redirect from the HTTP version to the HTTPS version.
 
 * `maintainer` (default `hostname@domain`): required for Let's Encrypt: an email address to send expiration notices to. Set this to a working email address if you want to receive them, keep at the default if that isn't necessary.
+
+* `set_default_headers` (default `false`): insert the `always set Referrer-Policy "strict-origin-when-cross-origin"` and `always set Strict-Transport-Security "max-age=63072000;includeSubdomains;"` (only for HTTPS hosts) headers.
+
+* `set_default_docroot` (default `false`): automatically insert the `<Directory>` configuration for the docroot. Sets `Indexes`, `FollowSymLinks` and `AllowOverride All`.
 
 ### Defined type hx_website::website
 Configure a website. It will configure an apache Virtual host, and optionally configure Let's Encrypt. Note that you must have a temporary certificate in place at `vhost_data['ssl_cert']` and `vhost_data['ssl_key']` before you attempt to run Puppet if you want a Let's Encrypt certificate. This is because the webserver must be running before a certificate can be requested, and the server will only run if the certificate referred to in the configuration file is already present.

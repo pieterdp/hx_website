@@ -1,10 +1,9 @@
 ## Release 1.0.5
 
 #### Summary
-
-
-#### Bugfixes
 - Added autoconfiguration for docroot directories.
+- Added default headers.
+- Removed dependency on hx_apache.
 
 
 ## Release 1.0.4

@@ -2,9 +2,13 @@
 # Configure the website resource
 # Depends on hx_apache
 class hx_website (
-    $configure_redirect = $hx_website::params::configure_redirect,
-    $maintainer = $hx_website::params::maintainer,
-) inherits hx_website::params {
+    Boolean $configure_redirect  = false,
+    String  $maintainer          = "${::networking['hostname']}@${::networking['domain']}",
+    Boolean $set_default_headers = false,
+    Boolean $set_default_docroot = false,
+) {
 
-    include hx_apache
+    if ! defined(Class['apache']) {
+        fail('You need to configure the apache class before loading this module.')
+    }
 }

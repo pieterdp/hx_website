@@ -83,7 +83,7 @@ define hx_website::config::vhost (
             }
         }
 
-        if ($hx_website::configure_redirect == true) {
+        if $hx_website::configure_redirect == true {
             ##
             # Configure an additional VHost that redirects all
             # unencrypted traffic to the encrypted host.
@@ -112,23 +112,48 @@ define hx_website::config::vhost (
         options        => [
             'Indexes',
             'FollowSymLinks',
-            'MultiViews'
         ],
         allow_override => [
             'All'
         ]
     }
-    if !has_key($vhost_data, 'directories') {
-        $directories = [$docroot]
-    } elsif !member($vhost_data['directories'], $vhost_data['docroot']) {
-        $directories = $vhost_data['directories'] + [$docroot]
+    if $hx_website::set_default_docroot == true {
+        if !has_key($vhost_data, 'directories') {
+            $directories = [$docroot]
+        } else {
+            $directories = $vhost_data['directories'] + [$docroot]
+        }
     } else {
         $directories = $vhost_data['directories']
     }
 
-    $vhost = {
-        directories => $directories
-    } + $vhost_data
+    # Headers
+    if $hx_website::set_default_headers == true {
+        $http_headers = [
+            'always set Referrer-Policy "strict-origin-when-cross-origin"',
+        ]
+
+        if $vhost_data['port'] == 443 {
+            $template_headers = $http_headers + [
+                'always set Strict-Transport-Security "max-age=63072000;includeSubdomains;"',
+            ]
+        } else {
+            $template_headers = $http_headers
+        }
+
+        if has_key($vhost_data, 'headers') {
+            $headers = $template_headers + $vhost_data['headers']
+        } else {
+            $headers = $template_headers
+        }
+    } else {
+        $headers = $vhost_data['headers']
+    }
+
+    $vhost = $vhost_data + {
+        directories => $directories,
+        headers     => unique($headers),
+    }
 
     apache::vhost {"${vhost_data['servername']}_${vhost_data['port']}":
         * => $vhost,
