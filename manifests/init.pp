@@ -3,7 +3,7 @@
 # Depends on hx_apache
 class hx_website (
     Boolean $configure_redirect  = false,
-    String  $maintainer          = "${::networking['hostname']}@${::networking['domain']}",
+    String  $maintainer          = 'nobody@hx_website',
     Boolean $set_default_headers = false,
     Boolean $set_default_docroot = false,
 ) {
