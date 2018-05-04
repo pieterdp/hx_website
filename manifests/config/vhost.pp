@@ -1,162 +1,162 @@
 ##
 # Configure a VirtualHost
 define hx_website::config::vhost (
-    $website_name = $title,
-    $vhost_data = undef,
-    $use_letsencrypt = true,
-    $cert_loc = undef,
-    $key_loc = undef,
-    ) {
+  $website_name    = $title,
+  $vhost_data      = undef,
+  $use_letsencrypt = true,
+  $cert_loc        = undef,
+  $key_loc         = undef,
+) {
 
-    validate_hash($vhost_data)
+  validate_hash($vhost_data)
 
-    if !defined(Class['hx_website']) {
-        fail('You must include/define hx_website before using hx_website::config::vhost.')
-    }
+  if !defined(Class['hx_website']) {
+    fail('You must include/define hx_website before using hx_website::config::vhost.')
+  }
 
-    if ($vhost_data['port'] == 443) {
-        if ($use_letsencrypt == true) {
-            $domains = [$vhost_data['servername']]
+  if ($vhost_data['port'] == 443) {
+    if ($use_letsencrypt == true) {
+      $domains = [$vhost_data['servername']]
 
-            if has_key($vhost_data, 'serveraliases') {
-                $lets_domains = concat($domains, $vhost_data['serveraliases'])
-            } else {
-                $lets_domains = $domains
-            }
+      if has_key($vhost_data, 'serveraliases') {
+        $lets_domains = concat($domains, $vhost_data['serveraliases'])
+      } else {
+        $lets_domains = $domains
+      }
 
-            include hx_website::config::ssl::letsencrypt
+      include hx_website::config::ssl::letsencrypt
 
-            letsencrypt::certonly {$vhost_data['servername']:
-                domains       => $lets_domains,
-                plugin        => 'webroot',
-                webroot_paths => ['/var/letsencrypt'],
-                manage_cron   => true,
-            }
+      letsencrypt::certonly { $vhost_data['servername']:
+        domains       => $lets_domains,
+        plugin        => 'webroot',
+        webroot_paths => ['/var/letsencrypt'],
+        manage_cron   => true,
+      }
 
-            file {$vhost_data['ssl_cert']:
-                ensure  => present,
-                links   => follow,
-                source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/fullchain.pem",
-                owner   => root,
-                group   => root,
-                mode    => '0644',
-                before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-                require => Letsencrypt::Certonly[$vhost_data['servername']],
-                notify  => Class['Apache::Service'],
-            }
-            file {$vhost_data['ssl_key']:
-                ensure  => present,
-                links   => follow,
-                source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem",
-                owner   => root,
-                group   => ssl-cert,
-                mode    => '0640',
-                before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-                require => Letsencrypt::Certonly[$vhost_data['servername']],
-                notify  => Class['Apache::Service'],
-            }
-        } else {
-            if $cert_loc == undef {
-                fail('If you define an SSL host and set use_letsencrypt to false, you must provide $cert_loc and $key_loc.')
-            }
-            if $key_loc == undef {
-                fail('If you define an SSL host and set use_letsencrypt to false, you must provide $cert_loc and $key_loc.')
-            }
-
-            file {$vhost_data['ssl_cert']:
-                ensure => present,
-                source => $cert_loc,
-                owner  => root,
-                group  => root,
-                mode   => '0644',
-                before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-                notify => Class['Apache::Service'],
-            }
-            file {$vhost_data['ssl_key']:
-                ensure => present,
-                source => $key_loc,
-                owner  => root,
-                group  => ssl-cert,
-                mode   => '0640',
-                before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-                notify => Class['Apache::Service'],
-            }
-        }
-
-        if $hx_website::configure_redirect == true {
-            ##
-            # Configure an additional VHost that redirects all
-            # unencrypted traffic to the encrypted host.
-            if ! has_key($vhost_data, 'serveraliases') {
-                $serveraliases = []
-            } else {
-                $serveraliases = $vhost_data['serveraliases']
-            }
-
-            apache::vhost {"${vhost_data['servername']}_80":
-                servername      => $vhost_data['servername'],
-                port            => 80,
-                docroot         => $vhost_data['docroot'],
-                docroot_owner   => $vhost_data['docroot_owner'],
-                docroot_group   => $vhost_data['docroot_group'],
-                serveraliases   => $serveraliases,
-                redirect_status => 'permanent',
-                redirect_dest   => "https://${vhost_data['servername']}/"
-            }
-        }
-    }
-
-    # Docroot
-    $docroot = {
-        path           => $vhost_data['docroot'],
-        options        => [
-            'Indexes',
-            'FollowSymLinks',
-        ],
-        allow_override => [
-            'All'
-        ]
-    }
-    if $hx_website::set_default_docroot == true {
-        if !has_key($vhost_data, 'directories') {
-            $directories = [$docroot]
-        } else {
-            $directories = $vhost_data['directories'] + [$docroot]
-        }
+      file { $vhost_data['ssl_cert']:
+        ensure  => present,
+        links   => follow,
+        source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/fullchain.pem",
+        owner   => root,
+        group   => root,
+        mode    => '0644',
+        before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        require => Letsencrypt::Certonly[$vhost_data['servername']],
+        notify  => Class['Apache::Service'],
+      }
+      file { $vhost_data['ssl_key']:
+        ensure  => present,
+        links   => follow,
+        source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem",
+        owner   => root,
+        group   => ssl-cert,
+        mode    => '0640',
+        before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        require => Letsencrypt::Certonly[$vhost_data['servername']],
+        notify  => Class['Apache::Service'],
+      }
     } else {
-        $directories = $vhost_data['directories']
+      if $cert_loc == undef {
+        fail('If you define an SSL host and set use_letsencrypt to false, you must provide $cert_loc and $key_loc.')
+      }
+      if $key_loc == undef {
+        fail('If you define an SSL host and set use_letsencrypt to false, you must provide $cert_loc and $key_loc.')
+      }
+
+      file { $vhost_data['ssl_cert']:
+        ensure => present,
+        source => $cert_loc,
+        owner  => root,
+        group  => root,
+        mode   => '0644',
+        before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        notify => Class['Apache::Service'],
+      }
+      file { $vhost_data['ssl_key']:
+        ensure => present,
+        source => $key_loc,
+        owner  => root,
+        group  => ssl-cert,
+        mode   => '0640',
+        before => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
+        notify => Class['Apache::Service'],
+      }
     }
 
-    # Headers
-    if $hx_website::set_default_headers == true {
-        $http_headers = [
-            'always set Referrer-Policy "strict-origin-when-cross-origin"',
-        ]
+    if $hx_website::configure_redirect == true {
+      ##
+      # Configure an additional VHost that redirects all
+      # unencrypted traffic to the encrypted host.
+      if !has_key($vhost_data, 'serveraliases') {
+        $serveraliases = []
+      } else {
+        $serveraliases = $vhost_data['serveraliases']
+      }
 
-        if $vhost_data['port'] == 443 {
-            $template_headers = $http_headers + [
-                'always set Strict-Transport-Security "max-age=63072000;includeSubdomains;"',
-            ]
-        } else {
-            $template_headers = $http_headers
-        }
+      apache::vhost { "${vhost_data['servername']}_80":
+        servername      => $vhost_data['servername'],
+        port            => 80,
+        docroot         => $vhost_data['docroot'],
+        docroot_owner   => $vhost_data['docroot_owner'],
+        docroot_group   => $vhost_data['docroot_group'],
+        serveraliases   => $serveraliases,
+        redirect_status => 'permanent',
+        redirect_dest   => "https://${vhost_data['servername']}/"
+      }
+    }
+  }
 
-        if has_key($vhost_data, 'headers') {
-            $headers = $template_headers + $vhost_data['headers']
-        } else {
-            $headers = $template_headers
-        }
+  # Docroot
+  $docroot = {
+    path           => $vhost_data['docroot'],
+    options        => [
+      'Indexes',
+      'FollowSymLinks',
+    ],
+    allow_override => [
+      'All'
+    ]
+  }
+  if $hx_website::set_default_docroot == true {
+    if !has_key($vhost_data, 'directories') {
+      $directories = [$docroot]
     } else {
-        $headers = $vhost_data['headers']
+      $directories = $vhost_data['directories'] + [$docroot]
+    }
+  } else {
+    $directories = $vhost_data['directories']
+  }
+
+  # Headers
+  if $hx_website::set_default_headers == true {
+    $http_headers = [
+      'always set Referrer-Policy "strict-origin-when-cross-origin"',
+    ]
+
+    if $vhost_data['port'] == 443 {
+      $template_headers = $http_headers + [
+        'always set Strict-Transport-Security "max-age=63072000;includeSubdomains;"',
+      ]
+    } else {
+      $template_headers = $http_headers
     }
 
-    $vhost = $vhost_data + {
-        directories => $directories,
-        headers     => unique($headers),
+    if has_key($vhost_data, 'headers') {
+      $headers = $template_headers + $vhost_data['headers']
+    } else {
+      $headers = $template_headers
     }
+  } else {
+    $headers = $vhost_data['headers']
+  }
 
-    apache::vhost {"${vhost_data['servername']}_${vhost_data['port']}":
-        * => $vhost,
-    }
+  $vhost = $vhost_data + {
+    directories => $directories,
+    headers     => unique($headers),
+  }
+
+  apache::vhost { "${vhost_data['servername']}_${vhost_data['port']}":
+    * => $vhost,
+  }
 
 }
