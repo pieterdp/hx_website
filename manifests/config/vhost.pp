@@ -41,7 +41,7 @@ define hx_website::config::vhost (
         group   => root,
         mode    => '0644',
         before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-        require => Letsencrypt::Certonly[$vhost_data['servername']],
+        require => Hx_website::Config::Letsencrypt::Cert[$vhost_data['servername']],
         notify  => Class['Apache::Service'],
       }
       file { $vhost_data['ssl_key']:
@@ -52,7 +52,7 @@ define hx_website::config::vhost (
         group   => root,
         mode    => '0640',
         before  => Apache::Vhost["${vhost_data['servername']}_${vhost_data['port']}"],
-        require => Letsencrypt::Certonly[$vhost_data['servername']],
+        require => Hx_website::Config::Letsencrypt::Cert[$vhost_data['servername']],
         notify  => Class['Apache::Service'],
       }
     } else {
