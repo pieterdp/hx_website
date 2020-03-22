@@ -24,13 +24,13 @@ class hx_website::config::letsencrypt::acme {
   exec {'git-install-acme.sh':
     require => File['/var/opt/app/letsencrypt/acme'],
     creates => '/var/opt/app/letsencrypt/acme/acme.sh',
-    command => "/usr/bin/git clone https://github.com/Neilpang/acme.sh.git -b ${hx_website::acme_version} /var/opt/app/letsencrypt/acme",
+    command => "/usr/bin/git clone https://github.com/Neilpang/acme.sh.git -b ${hx_website::acme_version} /var/tmp/acme.sh",
     notify  => Exec['install-acme.sh']
   }
 
   exec {'install-acme.sh':
     refreshonly => true,
-    command     => "/var/opt/app/letsencrypt/acme/acme.sh --install --home /var/opt/app/letsencrypt/acme --accountemail ${hx_website::maintainer}"
+    command     => "/var/tmp/acme.sh/acme.sh --install --home /var/opt/app/letsencrypt/acme --accountemail ${hx_website::maintainer}"
   }
 
   $hx_website::providers.each | Hash $provider | {
