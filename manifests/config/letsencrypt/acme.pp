@@ -30,7 +30,9 @@ class hx_website::config::letsencrypt::acme {
 
   exec {'install-acme.sh':
     refreshonly => true,
-    command     => "/var/tmp/acme.sh/acme.sh --install --home /var/opt/app/letsencrypt/acme --accountemail ${hx_website::maintainer}"
+    command     => "/var/tmp/acme.sh/acme.sh --install --home /var/opt/app/letsencrypt/acme --accountemail ${hx_website::maintainer}",
+    cwd         => '/var/tmp/acme.sh',
+    user        => 'letsencrypt'
   }
 
   $hx_website::providers.each | Hash $provider | {
