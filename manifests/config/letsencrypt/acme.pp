@@ -14,6 +14,13 @@ class hx_website::config::letsencrypt::acme {
     group  => 'letsencrypt'
   }
 
+  file {'/var/opt/app/letsencrypt/.providers':
+    ensure => directory,
+    owner  => 'letsencrypt',
+    group  => 'letsencrypt',
+    mode   => '0700'
+  }
+
   exec {'git-install-acme.sh':
     require => File['/var/opt/app/letsencrypt/acme'],
     creates => '/var/opt/app/letsencrypt/acme/acme.sh',
@@ -24,6 +31,19 @@ class hx_website::config::letsencrypt::acme {
   exec {'install-acme.sh':
     refreshonly => true,
     command     => "/var/opt/app/letsencrypt/acme/acme.sh --install --home /var/opt/app/letsencrypt/acme --accountemail ${hx_website::maintainer}"
+  }
+
+  $hx_website::providers.each | Hash $provider | {
+
+    file {"/var/opt/app/letsencrypt/.providers/.${provider['name']}":
+      mode    => '0600',
+      owner   => 'letsencrypt',
+      group   => 'letsencrypt',
+      content => epp('hx_website/provider.epp', {
+        provider => $provider['options']
+      })
+    }
+
   }
 
 }

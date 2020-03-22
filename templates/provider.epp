@@ -1,0 +1,5 @@
+<%- | Hash $provider
+| -%>
+<% $provider.each | $key, $value | { -%>
+export <%= $key %>="<%= $value %>"
+<% } -%>
