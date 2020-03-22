@@ -6,9 +6,14 @@ class hx_website (
   String  $maintainer          = 'nobody@hx_website',
   Boolean $set_default_headers = false,
   Boolean $set_default_docroot = false,
+  String  $api_token           = undef,
+  String  $dns_provider        = 'cf',
+  String  $acme_version        = '2.8.5'
 ) {
 
   if !defined(Class['apache']) {
     fail('You need to configure the apache class before loading this module.')
   }
+
+  include hx_website::letsencrypt::acme
 }
