@@ -13,6 +13,4 @@ class hx_website (
   if !defined(Class['apache']) {
     fail('You need to configure the apache class before loading this module.')
   }
-
-  include hx_website::config::letsencrypt::acme
 }

@@ -25,7 +25,8 @@ class hx_website::config::letsencrypt::acme {
     require => File['/var/opt/app/letsencrypt/acme'],
     creates => '/var/opt/app/letsencrypt/acme/acme.sh',
     command => "/usr/bin/git clone https://github.com/Neilpang/acme.sh.git -b ${hx_website::acme_version} /var/tmp/acme.sh",
-    notify  => Exec['install-acme.sh']
+    notify  => Exec['install-acme.sh'],
+    user    => 'letsencrypt'
   }
 
   exec {'install-acme.sh':

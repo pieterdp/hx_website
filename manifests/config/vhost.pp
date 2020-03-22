@@ -6,6 +6,7 @@ define hx_website::config::vhost (
   $use_letsencrypt = true,
   $cert_loc        = undef,
   $key_loc         = undef,
+  $provider        = 'dns_cf'
 ) {
 
   validate_hash($vhost_data)
@@ -16,6 +17,9 @@ define hx_website::config::vhost (
 
   if ($vhost_data['port'] == 443) {
     if ($use_letsencrypt == true) {
+
+      include hx_website::config::letsencrypt::acme
+
       $domains = [$vhost_data['servername']]
 
       if has_key($vhost_data, 'serveraliases') {
@@ -24,19 +28,15 @@ define hx_website::config::vhost (
         $lets_domains = $domains
       }
 
-      include hx_website::config::ssl::letsencrypt
-
-      letsencrypt::certonly { $vhost_data['servername']:
-        domains       => $lets_domains,
-        plugin        => 'webroot',
-        webroot_paths => ['/var/letsencrypt'],
-        manage_cron   => true,
+      hx_website::config::letsencrypt::cert {$lets_domains[0]:
+        domains  => $lets_domains,
+        provider => $provider
       }
 
       file { $vhost_data['ssl_cert']:
         ensure  => present,
         links   => follow,
-        source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/fullchain.pem",
+        source  => "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer",
         owner   => root,
         group   => root,
         mode    => '0644',
@@ -47,7 +47,7 @@ define hx_website::config::vhost (
       file { $vhost_data['ssl_key']:
         ensure  => present,
         links   => follow,
-        source  => "file:///etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem",
+        source  => "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/${vhost_data['servername']}.key",
         owner   => root,
         group   => root,
         mode    => '0640',
