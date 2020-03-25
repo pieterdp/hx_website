@@ -36,17 +36,12 @@ class hx_website::config::letsencrypt::acme {
     user        => 'letsencrypt'
   }
 
-  $hx_website::providers.each | Hash $provider | {
-
-    file {"/var/opt/app/letsencrypt/.providers/.${provider['name']}":
+  file {'/var/opt/app/letsencrypt/.acme.sh/account.conf':
       mode    => '0600',
       owner   => 'letsencrypt',
       group   => 'letsencrypt',
-      content => epp('hx_website/provider.epp', {
-        provider => $provider['options']
+      content => epp('hx_website/account.conf.epp', {
+        providers => $hx_website::providers
       })
-    }
-
   }
-
 }

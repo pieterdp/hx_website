@@ -1,0 +1,12 @@
+<%- | Array $providers
+| -%>
+
+LOG_FILE='/var/opt/app/letsencrypt/.acme.sh/acme.sh.log'
+USER_PATH='/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/puppetlabs/bin:/root/bin'
+
+<% $providers.each | $provider | { -%>
+  <% $provider.each | $key, $value | { -%>
+  SAVED_<%= $key %>='<%= $value %>'
+  <% } -%>
+<% } -%>
+
