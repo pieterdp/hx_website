@@ -14,7 +14,7 @@ define hx_website::config::letsencrypt::cert (
   }
 
   exec {"generate-certificate-${domains[0]}":
-    command     => "/var/opt/app/letsencrypt/acme/acme.sh --issue --dns ${provider} -d ${_domains}",
+    command     => "/var/opt/app/letsencrypt/acme/acme.sh --issue --dns ${provider} -d ${_domains} --home /var/opt/app/letsencrypt/.acme.sh",
     cwd         => '/var/opt/app/letsencrypt/acme',
     user        => 'letsencrypt',
     creates     => "/var/opt/app/letsencrypt/.acme.sh/${domains[0]}/${domains[0]}.cer",
