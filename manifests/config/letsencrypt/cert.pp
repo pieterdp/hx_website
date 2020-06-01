@@ -9,7 +9,7 @@ define hx_website::config::letsencrypt::cert (
 
   $hx_website::providers.each | $_provider | {
     if $_provider['name'] == $provider {
-      $_auth = $provider['options']
+      $_auth = $_provider['options']
     }
   }
 
