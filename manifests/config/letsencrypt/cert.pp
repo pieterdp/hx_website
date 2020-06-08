@@ -7,18 +7,39 @@ define hx_website::config::letsencrypt::cert (
 
   $_domains = join($domains, ' -d ')
 
-  $hx_website::providers.each | $_provider | {
-    if $_provider['name'] == $provider {
-      $_auth = $_provider['options']
-    }
-  }
+  if $provider == 'legacy' {
 
-  exec {"generate-certificate-${domains[0]}":
-    command     => "/var/opt/app/letsencrypt/acme/acme.sh --issue --dns ${provider} -d ${_domains} --home /var/opt/app/letsencrypt/.acme.sh",
-    cwd         => '/var/opt/app/letsencrypt/acme',
-    user        => 'letsencrypt',
-    creates     => "/var/opt/app/letsencrypt/.acme.sh/${domains[0]}/${domains[0]}.cer",
-    environment => $_auth
+    if $::os['family'] == 'RedHat' {
+      file {'/var/opt/apt/certs/.well-known/acme-challenge':
+        ensure  => directory,
+        seltype => 'httpd_sys_content_t'
+      }
+    } else {
+      file {'/var/opt/apt/certs/.well-known/acme-challenge':
+        ensure => directory
+      }
+    }
+
+    exec {"generate-certificate-${domains[0]}":
+      command => "/bin/certbot certonly --webroot --webroot-path /var/opt/apt/certs ${_domains}",
+      creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem"
+    }
+
+  } else {
+
+    $hx_website::providers.each | $_provider | {
+      if $_provider['name'] == $provider {
+        $_auth = $_provider['options']
+      }
+    }
+
+    exec {"generate-certificate-${domains[0]}":
+      command     => "/var/opt/app/letsencrypt/acme/acme.sh --issue --dns ${provider} -d ${_domains} --home /var/opt/app/letsencrypt/.acme.sh",
+      cwd         => '/var/opt/app/letsencrypt/acme',
+      user        => 'letsencrypt',
+      creates     => "/var/opt/app/letsencrypt/.acme.sh/${domains[0]}/${domains[0]}.cer",
+      environment => $_auth
+    }
   }
 
 }

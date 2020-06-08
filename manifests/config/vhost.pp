@@ -33,10 +33,18 @@ define hx_website::config::vhost (
         provider => $provider
       }
 
+      if $provider == 'legacy' {
+        $_source_cert = "/etc/letsencrypt/live/${vhost_data['servername']}/fullchain.pem"
+        $_source_key = "/etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem"
+      } else {
+        $_source_cert = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer"
+        $_source_key = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}.key"
+      }
+
       file { $vhost_data['ssl_cert']:
         ensure  => present,
         links   => follow,
-        source  => "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer",
+        source  => "file://${_source_cert}",
         owner   => root,
         group   => root,
         mode    => '0644',
@@ -47,7 +55,7 @@ define hx_website::config::vhost (
       file { $vhost_data['ssl_key']:
         ensure  => present,
         links   => follow,
-        source  => "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/${vhost_data['servername']}.key",
+        source  => "file://${_source_key}",
         owner   => root,
         group   => root,
         mode    => '0640',
@@ -150,9 +158,31 @@ define hx_website::config::vhost (
     $headers = $vhost_data['headers']
   }
 
+  # Rewrite rules
+  if $provider == 'legacy' {
+    if !has_key($vhost_data, 'rewrites') {
+      $rewrites = [
+        {
+          'rewrite_rule' => [
+            '^/\.well-known/acme-challenge/(.*)$ /var/opt/app/certs/.well-known/acme-challenge/$1 [L]'
+          ]
+        }
+      ]
+    } else {
+      $rewrites = $vhost_data['rewrites'] + [
+        {
+          'rewrite_rule' => [
+            '^/\.well-known/acme-challenge/(.*)$ /var/opt/app/certs/.well-known/acme-challenge/$1 [L]'
+          ]
+        }
+      ]
+    }
+  }
+
   $vhost = $vhost_data + {
     directories => $directories,
     headers     => unique($headers),
+    rewrites    => unique($rewrites)
   }
 
   apache::vhost { "${vhost_data['servername']}_${vhost_data['port']}":

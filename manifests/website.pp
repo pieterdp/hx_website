@@ -12,11 +12,12 @@
 # $cert_loc: location of the SSL certificate (see $key_loc)
 ##
 define hx_website::website (
-  $website_name    = $title,
-  $vhost_data      = undef,
-  $use_letsencrypt = true,
-  $key_loc         = undef,
-  $cert_loc        = undef,
+  $website_name         = $title,
+  $vhost_data           = undef,
+  $use_letsencrypt      = true,
+  $key_loc              = undef,
+  $cert_loc             = undef,
+  $letsencrypt_provider = 'dns_cf'
 ) {
   validate_hash($vhost_data)
 
@@ -28,7 +29,8 @@ define hx_website::website (
     vhost_data      => $vhost_data,
     use_letsencrypt => $use_letsencrypt,
     key_loc         => $key_loc,
-    cert_loc        => $cert_loc
+    cert_loc        => $cert_loc,
+    provider        => $letsencrypt_provider
   }
 
 }

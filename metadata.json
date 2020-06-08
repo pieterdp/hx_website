@@ -1,6 +1,6 @@
 {
   "name": "pieterdp-hx_website",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "author": "Pieter De Praetere",
   "summary": "Module to configure Apache and Let's Encrypt for a single website.",
   "license": "Apache-2.0",
