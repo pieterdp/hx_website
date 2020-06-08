@@ -163,7 +163,7 @@ define hx_website::config::vhost (
     if !has_key($vhost_data, 'rewrites') {
       $rewrites = [
         {
-          'rewrite_rule' => [
+          rewrite_rule => [
             '^/\.well-known/acme-challenge/(.*)$ /var/opt/app/certs/.well-known/acme-challenge/$1 [L]'
           ]
         }
@@ -171,18 +171,22 @@ define hx_website::config::vhost (
     } else {
       $rewrites = $vhost_data['rewrites'] + [
         {
-          'rewrite_rule' => [
+          rewrite_rule => [
             '^/\.well-known/acme-challenge/(.*)$ /var/opt/app/certs/.well-known/acme-challenge/$1 [L]'
           ]
         }
       ]
     }
-  }
-
-  $vhost = $vhost_data + {
-    directories => $directories,
-    headers     => unique($headers),
-    rewrites    => unique($rewrites)
+    $vhost = $vhost_data + {
+      directories => $directories,
+      headers     => unique($headers),
+      rewrites    => unique($rewrites)
+    }
+  } else {
+    $vhost = $vhost_data + {
+      directories => $directories,
+      headers     => unique($headers)
+    }
   }
 
   apache::vhost { "${vhost_data['servername']}_${vhost_data['port']}":
