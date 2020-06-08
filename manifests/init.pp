@@ -26,5 +26,25 @@ class hx_website (
       hour    => 1,
       minute  => 0
     }
+
+    file {'/var/opt/app/certs':
+      ensure => directory
+    }
+
+    file {'/var/opt/app/certs/.well-known':
+      ensure => directory
+    }
+
+    if $::os['family'] == 'RedHat' {
+      file {'/var/opt/app/certs/.well-known/acme-challenge':
+        ensure  => directory,
+        seltype => 'httpd_sys_content_t'
+      }
+    } else {
+      file {'/var/opt/app/certs/.well-known/acme-challenge':
+        ensure => directory
+      }
+    }
+
   }
 }

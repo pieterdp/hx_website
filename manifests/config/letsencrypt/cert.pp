@@ -9,17 +9,6 @@ define hx_website::config::letsencrypt::cert (
 
   if $provider == 'legacy' {
 
-    if $::os['family'] == 'RedHat' {
-      file {'/var/opt/apt/certs/.well-known/acme-challenge':
-        ensure  => directory,
-        seltype => 'httpd_sys_content_t'
-      }
-    } else {
-      file {'/var/opt/apt/certs/.well-known/acme-challenge':
-        ensure => directory
-      }
-    }
-
     exec {"generate-certificate-${domains[0]}":
       command => "/bin/certbot certonly --webroot --webroot-path /var/opt/apt/certs ${_domains}",
       creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem"
