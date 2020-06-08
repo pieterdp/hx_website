@@ -38,7 +38,7 @@ define hx_website::config::vhost (
         $_source_key = "/etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem"
       } else {
         $_source_cert = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer"
-        $_source_key = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}.key"
+        $_source_key = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/${vhost_data['servername']}.key"
       }
 
       file { $vhost_data['ssl_cert']:
