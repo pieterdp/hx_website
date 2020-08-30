@@ -37,14 +37,20 @@ define hx_website::config::vhost (
         $_source_cert = "/etc/letsencrypt/live/${vhost_data['servername']}/fullchain.pem"
         $_source_key = "/etc/letsencrypt/live/${vhost_data['servername']}/privkey.pem"
       } else {
-        $_source_cert = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer"
-        $_source_key = "/var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/${vhost_data['servername']}.key"
+        $_source_cert = [
+          "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/fullchain.cer",
+          "file:///var/opt/app/letsencrypt/acme/${vhost_data['servername']}/fullchain.cer"
+        ]
+        $_source_key = [
+          "file:///var/opt/app/letsencrypt/.acme.sh/${vhost_data['servername']}/${vhost_data['servername']}.key",
+          "file:///var/opt/app/letsencrypt/acme/${vhost_data['servername']}/${vhost_data['servername']}.key"
+        ]
       }
 
       file { $vhost_data['ssl_cert']:
         ensure  => present,
         links   => follow,
-        source  => "file://${_source_cert}",
+        source  => $_source_cert,
         owner   => root,
         group   => root,
         mode    => '0644',
@@ -55,7 +61,7 @@ define hx_website::config::vhost (
       file { $vhost_data['ssl_key']:
         ensure  => present,
         links   => follow,
-        source  => "file://${_source_key}",
+        source  => $_source_key,
         owner   => root,
         group   => root,
         mode    => '0640',
