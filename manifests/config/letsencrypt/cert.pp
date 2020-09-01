@@ -16,7 +16,7 @@ define hx_website::config::letsencrypt::cert (
     }
 
     exec {"generate-certificate-${domains[0]}":
-      command => "${_certbot_path} certonly --webroot --webroot-path /var/opt/app/certs ${_domains}",
+      command => "${_certbot_path} certonly --webroot --webroot-path /var/opt/app/certs -d ${_domains}",
       creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem"
     }
 
