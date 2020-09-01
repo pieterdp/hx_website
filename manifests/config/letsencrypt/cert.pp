@@ -9,8 +9,14 @@ define hx_website::config::letsencrypt::cert (
 
   if $provider == 'legacy' {
 
+    if $::os['family'] == 'Debian' {
+      $_certbot_path = '/usr/bin/certbot'
+    } else {
+      $_certbot_path = '/bin/certbot'
+    }
+
     exec {"generate-certificate-${domains[0]}":
-      command => "/bin/certbot certonly --webroot --webroot-path /var/opt/apt/certs ${_domains}",
+      command => "${_certbot_path} certonly --webroot --webroot-path /var/opt/apt/certs ${_domains}",
       creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem"
     }
 
